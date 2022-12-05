@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.airbnb.lottie.LottieAnimationView
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.BaseActivity
+import tj.ilhom.musicappplayer.core.view.BaseActivity
 import tj.ilhom.musicappplayer.extention.transparentToolbar
 import tj.ilhom.musicappplayer.module.main.view.MainActivity
 

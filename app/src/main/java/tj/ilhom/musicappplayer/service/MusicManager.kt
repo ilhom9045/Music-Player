@@ -18,6 +18,11 @@ class MusicManager(
 
     private val model = notificationUtil.notificationModel()
 
+    init {
+
+        mediaSession.mediaSession()
+    }
+
     fun previous(listener: MusicNotificationBroadcast.MusicNotificationListener? = null) {
         coroutineScope.launch {
             val item = model?.id?.let { it1 -> musicDao.previous(it1).toMusicItem() }
@@ -63,4 +68,11 @@ class MusicManager(
         mediaSession.clean()
         context.stopService(Intent(context, MusicService::class.java))
     }
+
+    interface MusicCurrentTime{
+
+        fun onTimeChange()
+
+    }
+
 }

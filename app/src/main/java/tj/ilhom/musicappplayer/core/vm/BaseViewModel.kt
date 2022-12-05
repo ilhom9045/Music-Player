@@ -1,4 +1,4 @@
-package tj.ilhom.musicappplayer.core
+package tj.ilhom.musicappplayer.core.vm
 
 import androidx.lifecycle.ViewModel
 

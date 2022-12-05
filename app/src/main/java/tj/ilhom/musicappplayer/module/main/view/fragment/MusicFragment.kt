@@ -1,4 +1,4 @@
-package tj.ilhom.musicappplayer.module.main.music
+package tj.ilhom.musicappplayer.module.main.view.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,14 +11,14 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.BaseFragment
+import tj.ilhom.musicappplayer.core.view.BaseFragment
 import tj.ilhom.musicappplayer.extention.*
 import tj.ilhom.musicappplayer.module.main.adapter.MusicAdapter
 import tj.ilhom.musicappplayer.module.main.callback.OnMusicAdapterItemClickListener
@@ -27,13 +27,12 @@ import tj.ilhom.musicappplayer.module.main.vm.MusicViewModel
 import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
 import tj.ilhom.musicappplayer.service.MusicNotificationBroadcast.Companion.musicNotificationListener
 import tj.ilhom.musicappplayer.service.MusicService
-import tj.ilhom.musicappplayer.service.NotificationUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemClickListener {
 
-    private val viewmodel: MusicViewModel by viewModels()
+    private val viewmodel: MusicViewModel by activityViewModels()
 
     @Inject
     lateinit var resManager: ResManager
@@ -108,26 +107,39 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
     }
 
     private fun initListener() {
+
+        bottom_linearLayout.setOnClickListener {
+            DetailsBottomSheet().show(childFragmentManager, this::class.java.simpleName)
+        }
+
         music_name.isSelected = true
+
         nextCardView.setOnClickListener {
-            requireContext().sendBroadcast(requireContext().newActionIntent(NotificationUtil.NEXT))
+            requireContext().nextMusic()
         }
+
         playImageView.setOnClickListener {
-            requireContext().sendBroadcast(requireContext().newActionIntent(NotificationUtil.PLAY))
+            requireContext().playMusic()
         }
+
         clearImageView.setOnClickListener {
             search_edittext.setText("")
         }
+
         search_edittext.addTextChangedListener {
             clearImageView.isVisible = !it.isNullOrEmpty()
             recyclerViewAdapter.filter.filter(it)
         }
+
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
         recyclerView.adapter = recyclerViewAdapter
+
         recyclerViewAdapter.musicAdapterItemClickListener = this
     }
 
     private fun initViews() {
+
         recyclerViewAdapter = MusicAdapter()
         progress = findViewById(R.id.progress_bar)
         recyclerView = findViewById(R.id.music_recyclerview)
@@ -146,10 +158,6 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
         val model = item.toMusicItem()
         bottom_linearLayout.isVisible = true
         viewmodel.showMusicData(model)
-
-        val intent = Intent(requireContext(), MusicService::class.java)
-        intent.putExtra(MusicService.NOTIFICATION_MODEL, model)
-        requireContext().startService(intent)
+        requireContext().playMusic(model)
     }
-
 }

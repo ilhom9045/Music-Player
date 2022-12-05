@@ -5,5 +5,6 @@ data class MusicItem(
     val id: Int,
     var musicPath: String,
     var title: String,
-    var artist: String
+    var artist: String,
+    var duration: String
 ) : java.io.Serializable

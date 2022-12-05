@@ -1,7 +1,6 @@
 package tj.ilhom.musicappplayer.module.main.view
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -11,12 +10,12 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import dagger.hilt.android.AndroidEntryPoint
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.BaseActivity
+import tj.ilhom.musicappplayer.core.view.BaseActivity
 import tj.ilhom.musicappplayer.extention.checkReadStoragePermission
 import tj.ilhom.musicappplayer.extention.showLongToast
 import tj.ilhom.musicappplayer.extention.showToolbar
 import tj.ilhom.musicappplayer.extention.transaction
-import tj.ilhom.musicappplayer.module.main.music.MusicFragment
+import tj.ilhom.musicappplayer.module.main.view.fragment.MusicFragment
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(R.layout.activity_main) {

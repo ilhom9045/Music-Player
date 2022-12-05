@@ -8,6 +8,7 @@ fun MusicItemDTO.toMusicItem(): MusicItem {
         id = this.id,
         musicPath = this.path,
         title = this.name,
-        artist = this.artist ?: ""
+        artist = this.artist ?: "",
+        duration = this.duration
     )
 }

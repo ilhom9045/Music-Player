@@ -1,4 +1,4 @@
-package tj.ilhom.musicappplayer.core
+package tj.ilhom.musicappplayer.core.view
 
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment

@@ -7,14 +7,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import tj.ilhom.musicappplayer.repository.TimerRepository
 import tj.ilhom.musicappplayer.repository.musicrepository.ReadAllMusicRepository
-import tj.ilhom.musicappplayer.repository.musicrepository.ReadMediaIcon
+import tj.ilhom.musicappplayer.repository.musicrepository.ReadMedia
 import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
 import tj.ilhom.musicappplayer.repository.room.dao.MusicDao
 import tj.ilhom.musicappplayer.repository.room.database.MusicDatabase
@@ -92,7 +92,10 @@ interface AppModules {
     fun bindReadAllMusicRepository(readlAllMusicRepository: ReadAllMusicRepository.Base): ReadAllMusicRepository
 
     @Binds
-    fun bindReadMediaIcon(readMediaIcon: ReadMediaIcon.Base): ReadMediaIcon
+    fun bindReadMediaIcon(readMediaIcon: ReadMedia.Base): ReadMedia
+
+    @Binds
+    fun bindTimerRepository(timerRepository: TimerRepository.Base): TimerRepository
 
 }
 

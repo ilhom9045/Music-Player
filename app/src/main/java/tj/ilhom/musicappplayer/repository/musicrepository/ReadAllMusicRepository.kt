@@ -12,8 +12,10 @@ interface ReadAllMusicRepository {
 
     fun getAllMusics(): ArrayList<MusicItemDTO>
 
-
-    class Base @Inject constructor(@ApplicationContext val context: Context) : ReadAllMusicRepository {
+    class Base @Inject constructor(
+        @ApplicationContext val context: Context,
+        private val readMedia: ReadMedia
+    ) : ReadAllMusicRepository {
 
         val musicList = ArrayList<MusicItemDTO>()
 
@@ -26,7 +28,6 @@ interface ReadAllMusicRepository {
         }
 
         fun getMp3File(file: File) {
-            Log.d("Directory", file.path + "file name = " + file.name)
             val isPrivate = file.name.startsWith(".")
             if (file.isFile && !isPrivate) {
 
@@ -35,34 +36,7 @@ interface ReadAllMusicRepository {
                 }
                 if (file.isFile && file.name.endsWith(".mp3")) {
                     id += 1
-                    val mediaMetaData = MediaMetadataRetriever()
-                    try {
-                        mediaMetaData.setDataSource(file.absolutePath)
-                        val duration =
-                            mediaMetaData.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        val artistName =
-                            mediaMetaData.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                        val dur = duration?.toLong()
-                        val second = ((dur?.rem(60000))?.div(1000)).toString()
-                        val minute = (dur?.div(60000)).toString()
-                        val music_duration = if (second.length == 1) {
-                            "0$minute:0$second"
-                        } else {
-                            "0$minute:$second"
-                        }
-                        mediaMetaData.release()
-                        musicList.add(
-                            MusicItemDTO(
-                                id,
-                                file.absolutePath,
-                                music_duration,
-                                file.name,
-                                artistName
-                            )
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    readMedia.mediaInfo(id, file.absolutePath, file.name)?.let { musicList.add(it) }
                 }
             }
             if (file.isDirectory && !isPrivate) {
