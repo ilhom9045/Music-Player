@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import dagger.hilt.android.qualifiers.ApplicationContext
-import tj.ilhom.musicappplayer.core.extention.musicDrawable
-import tj.ilhom.musicappplayer.module.main.model.MusicItemDTO
+import tj.ilhom.musicappplayer.extention.musicDrawable
+import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import tj.ilhom.musicappplayer.repository.TimerRepository
 import javax.inject.Inject
 

@@ -1,6 +1,7 @@
 package tj.ilhom.musicappplayer.core.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import dagger.Binds
 import dagger.Module
@@ -13,15 +14,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import tj.ilhom.musicappplayer.repository.TimerRepository
+import tj.ilhom.musicappplayer.repository.localStorage.MutableMusicConfig
+import tj.ilhom.musicappplayer.repository.localStorage.PlayMusicConfigStorage
 import tj.ilhom.musicappplayer.repository.musicrepository.ReadAllMusicRepository
 import tj.ilhom.musicappplayer.repository.musicrepository.ReadMedia
 import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
 import tj.ilhom.musicappplayer.repository.room.dao.MusicDao
 import tj.ilhom.musicappplayer.repository.room.database.MusicDatabase
-import tj.ilhom.musicappplayer.service.MediaSessionUtil
-import tj.ilhom.musicappplayer.service.MusicManager
-import tj.ilhom.musicappplayer.service.MusicPlayerUtil
-import tj.ilhom.musicappplayer.service.NotificationUtil
+import tj.ilhom.musicappplayer.service.*
+import javax.inject.Singleton
 
 
 @Module
@@ -43,38 +44,39 @@ class AppModul {
         return musicDatabase.dao()
     }
 
+
     @Provides
-    fun provideMusicManager(
+    fun provideNotificationUtil(
         @ApplicationContext context: Context,
-        musicDao: MusicDao,
-        coroutineScope: CoroutineScope,
-        musicPlayerUtil: MusicPlayerUtil,
-        musicSessionUtil: MediaSessionUtil,
-        notificationUtil: NotificationUtil
-    ): MusicManager {
-        return MusicManager(
-            context,
-            musicDao,
-            coroutineScope,
-            musicPlayerUtil,
-            musicSessionUtil,
-            notificationUtil
-        )
+        musicPlayerUtil: MusicPlayerUtil
+    ): NotificationUtil {
+        return NotificationUtil(context, musicPlayerUtil)
     }
 
     @Provides
-    fun provideNotificationUtil(@ApplicationContext context: Context): NotificationUtil {
-        return NotificationUtil(context)
+    fun providePlayMusicConfigStorage(
+        @ApplicationContext context: Context
+    ): PlayMusicConfigStorage {
+
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("music_play_config", Context.MODE_PRIVATE)
+
+        return PlayMusicConfigStorage(sharedPreferences)
     }
 
     @Provides
-    fun provideMediaSessionUtil(@ApplicationContext context: Context): MediaSessionUtil {
-        return MediaSessionUtil(context)
+    @Singleton
+    fun provideMediaSessionUtil(
+        @ApplicationContext context: Context,
+        musicPlayerUtil: MusicPlayerUtil
+    ): MediaSessionUtil {
+        return MediaSessionUtil(context, musicPlayerUtil)
     }
 
     @Provides
-    fun provideMusicPlayerUtil(): MusicPlayerUtil {
-        return MusicPlayerUtil()
+    @Singleton
+    fun provideMusicPlayerUtil(@ApplicationContext context: Context): MusicPlayerUtil {
+        return MusicPlayerUtil(context)
     }
 
     @Provides
@@ -97,6 +99,11 @@ interface AppModules {
     @Binds
     fun bindTimerRepository(timerRepository: TimerRepository.Base): TimerRepository
 
+    @Binds
+    fun bindMutableMusicConfig(mutableMusicConfig: MutableMusicConfig.Base): MutableMusicConfig
+
+    @Binds
+    fun bindMusicManager(manager: MusicManager.Base): MusicManager
 }
 
 @Module

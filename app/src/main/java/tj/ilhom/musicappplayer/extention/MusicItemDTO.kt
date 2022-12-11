@@ -1,6 +1,6 @@
 package tj.ilhom.musicappplayer.extention
 
-import tj.ilhom.musicappplayer.module.main.model.MusicItemDTO
+import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import tj.ilhom.musicappplayer.service.model.MusicItem
 
 fun MusicItemDTO.toMusicItem(): MusicItem {

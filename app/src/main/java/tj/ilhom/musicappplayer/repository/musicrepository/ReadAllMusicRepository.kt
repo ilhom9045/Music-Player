@@ -1,10 +1,8 @@
 package tj.ilhom.musicappplayer.repository.musicrepository
 
 import android.content.Context
-import android.media.MediaMetadataRetriever
-import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
-import tj.ilhom.musicappplayer.module.main.model.MusicItemDTO
+import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import java.io.File
 import javax.inject.Inject
 
@@ -42,7 +40,7 @@ interface ReadAllMusicRepository {
             if (file.isDirectory && !isPrivate) {
                 try {
                     val directoryFiles = file.listFiles()
-                    directoryFiles.forEach {
+                    directoryFiles?.forEach {
                         getMp3File(it)
                     }
                 } catch (e: Exception) {

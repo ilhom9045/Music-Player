@@ -21,13 +21,7 @@
         android:theme="@style/Theme.NoActionBar">
 
         <activity
-            android:name="tj.ilhom.musicappplayer.module.main.view.MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.FullScreen" />
-
-        <activity
-            android:name="tj.ilhom.musicappplayer.module.splash.view.SplashScreenActivity"
+            android:name=".modules.StartActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
             android:label="@string/title_activity_splash_screen"
@@ -48,8 +42,8 @@
             android:name="tj.ilhom.musicappplayer.service.MusicNotificationBroadcast"
             android:enabled="true">
 
-
         </receiver>
+
 
     </application>
 

@@ -1,24 +1,41 @@
 package tj.ilhom.musicappplayer.service
 
+import android.content.Context
 import android.media.MediaPlayer
+import tj.ilhom.musicappplayer.extention.newActionIntent
 
-class MusicPlayerUtil {
+class MusicPlayerUtil(private val context: Context) {
 
-    private companion object {
-        private var mediaPlayer: MediaPlayer? = null
+    private val mediaPlayer: MediaPlayer by lazy { MediaPlayer() }
+
+    private var playerListener: MusicPlayerListener? = null
+
+    init {
+        mediaPlayer.setOnCompletionListener {
+            context.sendBroadcast(context.newActionIntent(NotificationUtil.NEXT))
+        }
     }
 
-    fun player(): MediaPlayer? {
+    fun setListener(musicPlayerListener: MusicPlayerListener) {
+        this.playerListener = musicPlayerListener
+    }
+
+    fun onSeekTo(pos: Int) {
+        mediaPlayer.seekTo(pos)
+        playerListener?.onSeekTo(pos.toLong())
+    }
+
+    fun player(): MediaPlayer {
         return mediaPlayer
     }
 
     fun play(path: String) {
         try {
-            if (mediaPlayer == null) mediaPlayer = MediaPlayer()
-            mediaPlayer!!.reset()
-            mediaPlayer!!.setDataSource(path)
-            mediaPlayer!!.prepare()
-            mediaPlayer!!.start()
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(path)
+            mediaPlayer.prepare()
+            play()
+            playerListener?.onPlay()
         } catch (e: Exception) {
             e.printStackTrace()
             return
@@ -26,16 +43,26 @@ class MusicPlayerUtil {
     }
 
     fun pause() {
-        mediaPlayer?.pause()
+        mediaPlayer.pause()
+    }
+
+    fun stop() {
+        mediaPlayer.stop()
     }
 
     fun play() {
-        mediaPlayer?.start()
+        mediaPlayer.start()
     }
 
     fun clean() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer.release()
     }
 
+    interface MusicPlayerListener {
+
+        fun onPlay()
+
+        fun onSeekTo(pos: Long)
+
+    }
 }

@@ -3,13 +3,22 @@ package tj.ilhom.musicappplayer.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import dagger.hilt.android.AndroidEntryPoint
 import tj.ilhom.musicappplayer.service.model.MusicItem
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MusicService : Service() {
 
     companion object {
         const val NOTIFICATION_MODEL = "notificationModel"
     }
+
+    @Inject
+    lateinit var mediaSessionUtil: MediaSessionUtil
+
+    @Inject
+    lateinit var notificationUtil: NotificationUtil
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -21,9 +30,14 @@ class MusicService : Service() {
     }
 
     fun showNotification(model: MusicItem) {
-        val notification = NotificationUtil(this).createNotification(model)
-        val mediaSession = MediaSessionUtil(baseContext)
-        mediaSession.initSession(model)
+        val notification = notificationUtil.createNotification(model, mediaSessionUtil)
+        mediaSessionUtil.initSession(model)
         startForeground(13, notification)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaSessionUtil.mediaSession().release()
+        stopForeground(true)
     }
 }

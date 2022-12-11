@@ -3,26 +3,32 @@ package tj.ilhom.musicappplayer.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.extention.musicDrawable
+import tj.ilhom.musicappplayer.extention.musicDrawable
 import tj.ilhom.musicappplayer.extention.newActionIntent
 import tj.ilhom.musicappplayer.extention.newPendingIntent
+import tj.ilhom.musicappplayer.modules.StartActivity
 import tj.ilhom.musicappplayer.service.model.MusicItem
+import java.util.concurrent.atomic.AtomicInteger
 
-class NotificationUtil(private val context: Context) {
+class NotificationUtil(private val context: Context, private val musicPlayerUtil: MusicPlayerUtil) {
 
     companion object {
-        private var notification: Notification? = null
         const val PREVIOUS = "PREVIOUS"
         const val PLAY = "PLAY"
         const val NEXT = "NEXT"
         const val EXIT = "EXIT"
+        const val STOP = "STOP"
         private var musicItem: MusicItem? = null
+        val requestCodeProvider = AtomicInteger(SystemClock.elapsedRealtime().toInt())
     }
 
     fun notificationModel(): MusicItem? {
@@ -30,13 +36,12 @@ class NotificationUtil(private val context: Context) {
     }
 
     fun createNotification(
-        model: MusicItem
+        model: MusicItem, mediaSessionUtil: MediaSessionUtil
     ): Notification {
         musicItem = model
 
-        val isPlay = MusicPlayerUtil().player()?.isPlaying == true || model.isPlay
+        val isPlay = musicPlayerUtil.player()?.isPlaying == true || model.isPlay
 
-        val mediaSession = MediaSessionUtil(context)
         val drawable = model.musicPath.musicDrawable(context)
             ?: ContextCompat.getDrawable(context, R.drawable.music_icon)
 
@@ -56,32 +61,41 @@ class NotificationUtil(private val context: Context) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createNotificationChannel()
 
+        val pendingIntent =
+            PendingIntent.getActivity(
+                context,
+                requestCodeProvider.incrementAndGet(),
+                Intent(context, StartActivity::class.java),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                } else {
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                }
+            )
+
+
         val notificationBuilder =
             NotificationCompat.Builder(context, context.applicationContext.packageName)
-        with(notificationBuilder) {
+        with(notificationBuilder)
+        {
             setContentTitle(model.title.replace(".mp3", ""))
             setContentText(model.artist)
             setSmallIcon(R.drawable.music_icon)
             setLargeIcon(image)
             setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(mediaSession.mediaSession().sessionToken)
+                    .setMediaSession(mediaSessionUtil.mediaSession().sessionToken)
             )
             priority = NotificationCompat.PRIORITY_HIGH
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             addAction(R.drawable.previous_icon, PREVIOUS, prevPendingIntent)
-
+            setContentIntent(pendingIntent)
             addAction(playIcon(isPlay), PLAY, playPendingIntent)
             addAction(R.drawable.next_icon, NEXT, nextPendingIntent)
             if (!isPlay)
                 addAction(R.drawable.exit_icon, EXIT, exitPendingIntent)
         }
-        notification = notificationBuilder.build()
-        return notification!!
-    }
-
-    fun clean() {
-        notification = null
+        return notificationBuilder.build()
     }
 
     fun playIcon(boolean: Boolean): Int {
