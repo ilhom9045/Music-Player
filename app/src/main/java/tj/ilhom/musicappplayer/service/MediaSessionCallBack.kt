@@ -8,8 +8,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyEvent.*
-import tj.ilhom.musicappplayer.extention.newActionIntent
-import tj.ilhom.musicappplayer.extention.startMusicService
+import tj.ilhom.musicappplayer.extention.*
 
 class MediaSessionCallBack(
     private val context: Context,
@@ -34,32 +33,31 @@ class MediaSessionCallBack(
 
     override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
         val keyEvent: KeyEvent? = mediaButtonEvent?.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
-        Log.d("MediaSessionCallBack", "onMediaButtonEvent: $keyEvent")
 
-        if (keyEvent == null || keyEvent.action != KeyEvent.ACTION_DOWN) {
+        if (keyEvent == null || keyEvent.action != ACTION_DOWN) {
             return false
         }
 
         when (keyEvent.keyCode) {
             KEYCODE_MEDIA_PLAY_PAUSE, KEYCODE_HEADSETHOOK -> {
-                context.sendBroadcast(context.newActionIntent(NotificationUtil.PLAY))
+                context.playMusic()
                 return true
             }
             KEYCODE_MEDIA_NEXT -> {
-                context.sendBroadcast(context.newActionIntent(NotificationUtil.NEXT))
+                context.nextMusic()
                 return true
             }
             KEYCODE_MEDIA_PLAY -> {
-                context.sendBroadcast(context.newActionIntent(NotificationUtil.PLAY))
+                context.playMusic()
                 return true
             }
             KEYCODE_MEDIA_PREVIOUS -> {
-                context.sendBroadcast(context.newActionIntent(NotificationUtil.PREVIOUS))
+                context.previousMusic()
                 return true
             }
 
             KEYCODE_MEDIA_STOP -> {
-                context.sendBroadcast(context.newActionIntent(NotificationUtil.STOP))
+                context.stopMusic()
                 return true
             }
 

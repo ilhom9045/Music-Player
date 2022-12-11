@@ -31,6 +31,10 @@ class NotificationUtil(private val context: Context, private val musicPlayerUtil
         val requestCodeProvider = AtomicInteger(SystemClock.elapsedRealtime().toInt())
     }
 
+    fun setModel(model: MusicItem) {
+        musicItem = model
+    }
+
     fun notificationModel(): MusicItem? {
         return musicItem
     }
@@ -40,7 +44,7 @@ class NotificationUtil(private val context: Context, private val musicPlayerUtil
     ): Notification {
         musicItem = model
 
-        val isPlay = musicPlayerUtil.player()?.isPlaying == true || model.isPlay
+        val isPlay = musicPlayerUtil.player().isPlaying || model.isPlay
 
         val drawable = model.musicPath.musicDrawable(context)
             ?: ContextCompat.getDrawable(context, R.drawable.music_icon)

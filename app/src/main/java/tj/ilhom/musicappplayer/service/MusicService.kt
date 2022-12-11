@@ -4,6 +4,11 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import tj.ilhom.musicappplayer.extention.toLatestMusicModel
+import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.SaveLatestMusic
 import tj.ilhom.musicappplayer.service.model.MusicItem
 import javax.inject.Inject
 
@@ -19,6 +24,7 @@ class MusicService : Service() {
 
     @Inject
     lateinit var notificationUtil: NotificationUtil
+
 
     override fun onBind(intent: Intent?): IBinder? {
         return null

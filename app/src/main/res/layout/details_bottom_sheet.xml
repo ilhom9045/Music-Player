@@ -33,6 +33,7 @@
         android:layout_height="160dp"
         android:layout_gravity="center"
         android:layout_margin="36dp"
+        app:cardUseCompatPadding="false"
         app:cardCornerRadius="24dp"
         app:cardElevation="8dp">
 

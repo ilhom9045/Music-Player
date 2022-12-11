@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface ReadLocalData {
 
+    suspend fun <T:Any> read(key: String, clazz: Class<T>): Flow<T?>
+
     suspend fun readString(key: String, defaultValue: String?): Flow<String?>
 
     suspend fun readInt(key: String, defaultValue: Int): Flow<Int>
@@ -18,4 +20,12 @@ interface ReadLocalData {
 
     suspend fun clear()
 
+}
+
+suspend inline fun <reified T:Any> ReadLocalData.readT(key: String): Flow<T?> {
+    return read(key, T::class.java)
+}
+
+suspend fun ReadLocalData.readStringOrNull(key: String): Flow<String?> {
+    return readString(key, null)
 }

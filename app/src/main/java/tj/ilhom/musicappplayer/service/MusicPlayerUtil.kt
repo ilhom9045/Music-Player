@@ -3,6 +3,7 @@ package tj.ilhom.musicappplayer.service
 import android.content.Context
 import android.media.MediaPlayer
 import tj.ilhom.musicappplayer.extention.newActionIntent
+import tj.ilhom.musicappplayer.extention.nextMusic
 
 class MusicPlayerUtil(private val context: Context) {
 
@@ -10,19 +11,17 @@ class MusicPlayerUtil(private val context: Context) {
 
     private var playerListener: MusicPlayerListener? = null
 
-    init {
-        mediaPlayer.setOnCompletionListener {
-            context.sendBroadcast(context.newActionIntent(NotificationUtil.NEXT))
-        }
-    }
-
     fun setListener(musicPlayerListener: MusicPlayerListener) {
         this.playerListener = musicPlayerListener
     }
 
     fun onSeekTo(pos: Int) {
-        mediaPlayer.seekTo(pos)
-        playerListener?.onSeekTo(pos.toLong())
+        try {
+            mediaPlayer.seekTo(pos)
+            playerListener?.onSeekTo(pos.toLong())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun player(): MediaPlayer {
@@ -35,6 +34,9 @@ class MusicPlayerUtil(private val context: Context) {
             mediaPlayer.setDataSource(path)
             mediaPlayer.prepare()
             play()
+            mediaPlayer.setOnCompletionListener {
+                context.nextMusic()
+            }
             playerListener?.onPlay()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -48,6 +50,7 @@ class MusicPlayerUtil(private val context: Context) {
 
     fun stop() {
         mediaPlayer.stop()
+        mediaPlayer.setOnCompletionListener {}
     }
 
     fun play() {

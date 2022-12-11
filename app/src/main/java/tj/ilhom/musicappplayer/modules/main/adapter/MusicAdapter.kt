@@ -27,7 +27,7 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
         dataList.clear()
         dataList.addAll(newItems)
         items.addAll(newItems)
-        differ.submitList(items)
+        differ.submitList(items.map { it.copy() })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -71,8 +71,8 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
                     for (i in dataList) {
                         if (i.name.trim().lowercase().contains(filterPattern) || i.artist?.trim()
                                 ?.lowercase()?.contentEquals(
-                                filterPattern
-                            ) == true
+                                    filterPattern
+                                ) == true
                         ) {
                             filteredList.add(i)
                         }
@@ -87,16 +87,16 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
             override fun publishResults(p0: CharSequence?, results: FilterResults?) {
                 items.clear()
                 items.addAll(results?.values as ArrayList<MusicItemDTO>)
-                notifyDataSetChanged()
+                differ.submitList(items.map { it.copy() })
             }
 
         }
     }
 
-    private val differCallback = object : DiffUtil.ItemCallback<MusicItemDTO>(){
+    private val differCallback = object : DiffUtil.ItemCallback<MusicItemDTO>() {
 
         override fun areItemsTheSame(oldItem: MusicItemDTO, newItem: MusicItemDTO): Boolean {
-            return  oldItem.id == newItem.id
+            return oldItem.id == newItem.id
         }
 
         @SuppressLint("DiffUtilEquals")
@@ -106,5 +106,5 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
 
     }
 
-    val differ = AsyncListDiffer(this,differCallback)
+    val differ = AsyncListDiffer(this, differCallback)
 }

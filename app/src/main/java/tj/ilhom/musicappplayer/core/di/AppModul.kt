@@ -13,9 +13,14 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import tj.ilhom.musicappplayer.repository.JsonParserRepository
+import tj.ilhom.musicappplayer.repository.MusicManager
 import tj.ilhom.musicappplayer.repository.TimerRepository
 import tj.ilhom.musicappplayer.repository.localStorage.MutableMusicConfig
 import tj.ilhom.musicappplayer.repository.localStorage.PlayMusicConfigStorage
+import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.MutableLatestMusic
+import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.ReadLatestMusic
+import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.SaveLatestMusic
 import tj.ilhom.musicappplayer.repository.musicrepository.ReadAllMusicRepository
 import tj.ilhom.musicappplayer.repository.musicrepository.ReadMedia
 import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
@@ -55,13 +60,13 @@ class AppModul {
 
     @Provides
     fun providePlayMusicConfigStorage(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context, jsonParserRepository: JsonParserRepository
     ): PlayMusicConfigStorage {
 
         val sharedPreferences: SharedPreferences =
             context.getSharedPreferences("music_play_config", Context.MODE_PRIVATE)
 
-        return PlayMusicConfigStorage(sharedPreferences)
+        return PlayMusicConfigStorage(sharedPreferences, jsonParserRepository)
     }
 
     @Provides
@@ -104,6 +109,19 @@ interface AppModules {
 
     @Binds
     fun bindMusicManager(manager: MusicManager.Base): MusicManager
+
+    @Binds
+    fun bindMutableLatestMusicRepository(latestMusic: MutableLatestMusic.Base): MutableLatestMusic
+
+    @Binds
+    fun bindReadLatestMusicRepository(mutableLatestMusic: MutableLatestMusic): ReadLatestMusic
+
+    @Binds
+    fun bindSavelatestMusic(mutableLatestMusic: MutableLatestMusic): SaveLatestMusic
+
+    @Binds
+    fun bindJsonParserr(jsonParserRepository: JsonParserRepository.Base):JsonParserRepository
+
 }
 
 @Module

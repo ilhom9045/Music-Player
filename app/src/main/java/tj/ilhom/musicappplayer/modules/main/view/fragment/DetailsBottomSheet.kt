@@ -25,7 +25,6 @@ import kotlin.properties.Delegates.notNull
 @AndroidEntryPoint
 class DetailsBottomSheet : BaseBottomSheetDialogFragment(
     layout = R.layout.details_bottom_sheet,
-    mtheme = R.style.AppBottomSheetDialogTheme,
     fullScreen = true
 ), SeekBar.OnSeekBarChangeListener {
 

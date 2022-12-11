@@ -19,7 +19,6 @@ import kotlin.properties.Delegates.notNull
 
 class MusicListBottomSheet : BaseBottomSheetDialogFragment(
     R.layout.music_list_bottom_sheet,
-    R.style.AppBottomSheetDialogTheme,
     false
 ), OnMusicAdapterItemClickListener {
 

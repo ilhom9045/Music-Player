@@ -32,7 +32,6 @@ class MediaSessionUtil(
         player.setListener(this)
     }
 
-
     fun mediaSession(): MediaSessionCompat {
         return mediaSession
     }
@@ -41,6 +40,7 @@ class MediaSessionUtil(
         if (model.isPlay) {
             player.play(model.musicPath)
         }
+        onPlay()
     }
 
     override fun onPlay() {

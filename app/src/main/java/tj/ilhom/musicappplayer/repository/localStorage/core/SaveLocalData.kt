@@ -2,6 +2,8 @@ package tj.ilhom.musicappplayer.repository.localStorage.core
 
 interface SaveLocalData {
 
+    suspend fun <T> save(key: String, data: T)
+
     suspend fun saveString(key: String, value: String?)
 
     suspend fun saveInt(key: String, value: Int)

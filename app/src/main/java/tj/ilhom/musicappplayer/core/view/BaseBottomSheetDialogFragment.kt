@@ -16,14 +16,10 @@ import tj.ilhom.musicappplayer.core.utils.ToolbarUtil
 import javax.inject.Inject
 
 abstract class BaseBottomSheetDialogFragment constructor(
-    @LayoutRes val layout: Int, val mtheme: Int, val fullScreen: Boolean
+    @LayoutRes val layout: Int, val fullScreen: Boolean
 ) : BottomSheetDialogFragment() {
 
     protected val toolbar: ToolbarUtil by lazy { ToolbarUtil(requireActivity() as AppCompatActivity) }
-
-    override fun getTheme(): Int {
-        return mtheme
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

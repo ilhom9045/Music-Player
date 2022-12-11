@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import tj.ilhom.musicappplayer.R
 import tj.ilhom.musicappplayer.core.view.BaseFragment
@@ -24,7 +25,10 @@ import tj.ilhom.musicappplayer.modules.main.callback.OnMusicAdapterItemClickList
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import tj.ilhom.musicappplayer.modules.main.vm.MusicViewModel
 import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
+import tj.ilhom.musicappplayer.service.MediaSessionUtil
 import tj.ilhom.musicappplayer.service.MusicNotificationBroadcast.Companion.musicNotificationListener
+import tj.ilhom.musicappplayer.service.MusicPlayerUtil
+import tj.ilhom.musicappplayer.service.NotificationUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -99,8 +103,12 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
             }
         }
 
+        viewmodel.latestMusic.observe(viewLifecycleOwner) {
+            requireContext().playMusic(it)
+            requireContext().playMusic()
+        }
+
         if (savedInstanceState == null) {
-            viewmodel.readMusic()
             viewmodel.getAllMusics()
         }
     }

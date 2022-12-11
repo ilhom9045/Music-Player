@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import tj.ilhom.musicappplayer.service.MusicService
 import tj.ilhom.musicappplayer.service.NotificationUtil
@@ -43,6 +42,10 @@ fun Context.previousMusic() {
 
 fun Context.playMusic() {
     sendBroadcast(newActionIntent(NotificationUtil.PLAY))
+}
+
+fun Context.stopMusic() {
+    sendBroadcast(newActionIntent(NotificationUtil.STOP))
 }
 
 fun Context.playMusic(model: MusicItem) {

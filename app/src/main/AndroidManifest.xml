@@ -24,6 +24,7 @@
             android:name=".modules.StartActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_splash_screen"
             android:theme="@style/Theme.FullScreen">
             <intent-filter>

@@ -9,9 +9,8 @@ import javax.inject.Inject
 abstract class BaseVMBottomSheet<VM : BaseViewModel>(
     clazz: Class<VM>,
     @LayoutRes layout: Int,
-    mtheme: Int = R.style.AppBottomSheetDialogTheme,
     fullScreen: Boolean = false
-) : BaseBottomSheetDialogFragment(layout, mtheme, fullScreen) {
+) : BaseBottomSheetDialogFragment(layout, fullScreen) {
 
     protected val viewModel: VM by lazy {
         ViewModelProvider(this)[clazz]
