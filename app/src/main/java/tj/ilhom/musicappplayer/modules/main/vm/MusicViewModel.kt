@@ -206,7 +206,7 @@ class MusicViewModel @Inject constructor(
     fun changeMusicControl() {
         viewModelScope.launch {
             val localMusicConfig =
-                musicConfig.read(MutableMusicConfig.MusicConfig.PlayOnes()).first()
+                musicConfig.read(MutableMusicConfig.MusicConfig.Replay()).first()
             val changeToConfig = when (localMusicConfig) {
                 is MutableMusicConfig.MusicConfig.PlayOnes -> {
                     MutableMusicConfig.MusicConfig.Replay()
@@ -227,7 +227,7 @@ class MusicViewModel @Inject constructor(
 
     private fun initMusicControllerIcon() {
         viewModelScope.launch(Dispatchers.IO) {
-            when (musicConfig.read(MutableMusicConfig.MusicConfig.PlayOnes()).first()) {
+            when (musicConfig.read(MutableMusicConfig.MusicConfig.Replay()).first()) {
 
                 is MutableMusicConfig.MusicConfig.PlayOnes -> {
                     _changeMusicConfig.postValue(R.drawable.ic_baseline_repeat_one_24)

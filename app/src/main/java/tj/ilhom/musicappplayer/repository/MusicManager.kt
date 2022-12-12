@@ -48,7 +48,7 @@ interface MusicManager {
         override fun previous(listener: MusicNotificationBroadcast.MusicNotificationListener?) {
             coroutineScope.launch {
                 val item: MusicItem? =
-                    when (musicConfig.read(MutableMusicConfig.MusicConfig.PlayOnes()).first()) {
+                    when (musicConfig.read(MutableMusicConfig.MusicConfig.Replay()).first()) {
 
                         is MutableMusicConfig.MusicConfig.PlayOnes -> {
                             model
@@ -108,7 +108,7 @@ interface MusicManager {
         override fun next(listener: MusicNotificationBroadcast.MusicNotificationListener?) {
             coroutineScope.launch {
                 val item: MusicItem? =
-                    when (musicConfig.read(MutableMusicConfig.MusicConfig.PlayOnes()).first()) {
+                    when (musicConfig.read(MutableMusicConfig.MusicConfig.Replay()).first()) {
 
                         is MutableMusicConfig.MusicConfig.PlayOnes -> {
                             model
