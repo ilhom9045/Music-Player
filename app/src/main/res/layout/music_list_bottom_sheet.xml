@@ -4,6 +4,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:text="@string/music_list"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/music_recyclerview"
         android:layout_width="match_parent"
@@ -12,9 +21,9 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button"
-        android:text="@string/close"
         style="@style/MaterialButtonPopUpSecondaryActionStyle"
         android:layout_margin="16dp"
-        android:letterSpacing="0" />
+        android:letterSpacing="0"
+        android:text="@string/close" />
 
 </LinearLayout>

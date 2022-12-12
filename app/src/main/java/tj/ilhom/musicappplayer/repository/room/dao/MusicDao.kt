@@ -2,6 +2,7 @@ package tj.ilhom.musicappplayer.repository.room.dao
 
 import androidx.room.*
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
+import tj.ilhom.musicappplayer.service.model.MusicItem
 
 @Dao
 interface MusicDao {
@@ -14,6 +15,9 @@ interface MusicDao {
 
     @Query("Delete from musics")
     fun deleteAll()
+
+    @Delete
+    fun delete(item: MusicItemDTO)
 
     @Query("Select * from musics limit :start offset :end")
     fun getRangeMusic(start: Int, end: Int): List<MusicItemDTO>
@@ -34,7 +38,7 @@ interface MusicDao {
     fun firstItem(): MusicItemDTO
 
     @Query("Select * from musics where id != :id  ORDER BY RANDOM() LIMIT 1")
-    fun randomMusic(id:Int):MusicItemDTO
+    fun randomMusic(id: Int): MusicItemDTO
 
     suspend fun next(id: Int): MusicItemDTO {
         return if (exist(id + 1))

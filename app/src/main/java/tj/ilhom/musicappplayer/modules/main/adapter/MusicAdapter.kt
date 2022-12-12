@@ -1,6 +1,7 @@
 package tj.ilhom.musicappplayer.modules.main.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,14 +9,17 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import tj.ilhom.musicappplayer.R
 import tj.ilhom.musicappplayer.modules.main.callback.OnMusicAdapterItemClickListener
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 
-class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable {
+class MusicAdapter(private val coroutineScope: CoroutineScope) :
+    ListAdapter<MusicItemDTO, MusicAdapter.ViewHolder>(MusicDiffUtil()) {
 
     private val items = ArrayList<MusicItemDTO>()
     private var dataList = ArrayList<MusicItemDTO>()
@@ -27,7 +31,7 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
         dataList.clear()
         dataList.addAll(newItems)
         items.addAll(newItems)
-        differ.submitList(items.map { it.copy() })
+        submitList(items)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -36,11 +40,7 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
         )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(differ.currentList[position])
-    }
-
-    override fun getItemCount() = differ.currentList.size
+    override fun getItemCount() = currentList.size
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
 
@@ -58,45 +58,10 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
         }
     }
 
-    override fun getFilter(): Filter {
-        return object : Filter() {
-
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filteredList = ArrayList<MusicItemDTO>()
-
-                if (constraint == null || constraint.isEmpty()) {
-                    filteredList.addAll(dataList)
-                } else {
-                    val filterPattern = constraint.toString().lowercase().trim()
-                    for (i in dataList) {
-                        if (i.name.trim().lowercase().contains(filterPattern) || i.artist?.trim()
-                                ?.lowercase()?.contentEquals(
-                                    filterPattern
-                                ) == true
-                        ) {
-                            filteredList.add(i)
-                        }
-                    }
-                }
-
-                val result = FilterResults()
-                result.values = filteredList
-                return result
-            }
-
-            override fun publishResults(p0: CharSequence?, results: FilterResults?) {
-                items.clear()
-                items.addAll(results?.values as ArrayList<MusicItemDTO>)
-                differ.submitList(items.map { it.copy() })
-            }
-
-        }
-    }
-
-    private val differCallback = object : DiffUtil.ItemCallback<MusicItemDTO>() {
+    private class MusicDiffUtil : DiffUtil.ItemCallback<MusicItemDTO>() {
 
         override fun areItemsTheSame(oldItem: MusicItemDTO, newItem: MusicItemDTO): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.path == newItem.path
         }
 
         @SuppressLint("DiffUtilEquals")
@@ -106,5 +71,39 @@ class MusicAdapter : RecyclerView.Adapter<MusicAdapter.ViewHolder>(), Filterable
 
     }
 
-    val differ = AsyncListDiffer(this, differCallback)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(currentList[position])
+    }
+
+    private var job: Job? = null
+
+    fun filter(constraint: String) {
+
+        job?.cancel()
+
+        job = coroutineScope.launch {
+
+            delay(700)
+
+            val filteredList = ArrayList<MusicItemDTO>()
+
+            if (constraint.isEmpty()) {
+                filteredList.addAll(dataList)
+            } else {
+                val filterPattern = constraint.lowercase().trim()
+                for (i in dataList) {
+                    if (i.name.trim().lowercase().contains(filterPattern) || i.artist?.trim()
+                            ?.lowercase()?.contentEquals(
+                                filterPattern
+                            ) == true
+                    ) {
+                        filteredList.add(i)
+                    }
+                }
+            }
+
+            submitList(filteredList)
+            job = null
+        }
+    }
 }

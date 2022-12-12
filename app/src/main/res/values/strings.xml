@@ -10,4 +10,5 @@
     <string name="PERMISSION_GRANTED">Ура pазрешение было предоставлена</string>
     <string name="PERMISSION_DAINED">Разрешение не было дано</string>
     <string name="close">Закрыть</string>
+    <string name="music_list">Список музыки</string>
 </resources>

@@ -16,6 +16,7 @@ import tj.ilhom.musicappplayer.R
 import tj.ilhom.musicappplayer.core.utils.SingleLiveEvent
 import tj.ilhom.musicappplayer.core.vm.BaseViewModel
 import tj.ilhom.musicappplayer.extention.await
+import tj.ilhom.musicappplayer.extention.toLatestMusicModel
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import tj.ilhom.musicappplayer.repository.Observable
 import tj.ilhom.musicappplayer.repository.TimerRepository
@@ -29,6 +30,7 @@ import tj.ilhom.musicappplayer.service.MusicNotificationBroadcast
 import tj.ilhom.musicappplayer.service.MusicPlayerUtil
 import tj.ilhom.musicappplayer.service.NotificationUtil
 import tj.ilhom.musicappplayer.service.model.MusicItem
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,12 +41,15 @@ class MusicViewModel @Inject constructor(
     private val timerRepository: TimerRepository,
     private val musicPlayerUtil: MusicPlayerUtil,
     private val musicConfig: MutableMusicConfig,
-    private val readLatestMusic: ReadLatestMusic,
+    private val mutableLatestMusic: MutableLatestMusic,
     private val notificationUtil: NotificationUtil
 ) : BaseViewModel(), MusicNotificationBroadcast.MusicNotificationListener {
 
     private val _changeMusicConfig = MutableLiveData<Int>()
     val changeMusicConfig: LiveData<Int> = _changeMusicConfig
+
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> = _loading
 
     private val _music = MutableLiveData<List<MusicItemDTO>>()
     val musics: LiveData<List<MusicItemDTO>> = _music
@@ -70,6 +75,9 @@ class MusicViewModel @Inject constructor(
     private val _exit = MutableSharedFlow<Boolean>()
     val exit = _exit.asSharedFlow()
 
+    private val _playMusic = SingleLiveEvent<MusicItem>()
+    val playMusic: LiveData<MusicItem> = _playMusic
+
     init {
         initMusicControllerIcon()
         readLatestMusic()
@@ -81,8 +89,11 @@ class MusicViewModel @Inject constructor(
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
-            val data = readLatestMusic.read().await()
+            val data = mutableLatestMusic.read().await()
             data?.let {
+
+                if (!File(it.musicPath).exists()) return@launch
+
                 launch(Dispatchers.Main) {
                     val model = MusicItem(
                         true,
@@ -113,36 +124,57 @@ class MusicViewModel @Inject constructor(
     }
 
     fun getAllMusics() {
+        _loading.postValue(true)
         viewModelScope.launch(Dispatchers.IO) {
             readMusic()
             _music.postValue(musicDao.getAll())
+            _loading.postValue(false)
         }
     }
 
     private var job: Job? = null
 
     fun showMusicData(item: MusicItem) {
-        _musicDuration.value = timerRepository.timeToDuration(item.duration).toString()
-        _musicIcon.value = readMediaIcon.readIcon(item.musicPath)
-        _musicName.value = item.title
-        if (item.isPlay) {
-            play()
-        } else {
-            pause()
+        viewModelScope.launch {
+            val file = File(item.musicPath)
+            if (!file.exists()) {
+                musicDao.delete(
+                    MusicItemDTO(
+                        item.id,
+                        item.musicPath,
+                        item.duration,
+                        item.title,
+                        item.artist
+                    )
+                )
+                getAllMusics()
+                return@launch
+            }
+            _musicDuration.postValue(timerRepository.timeToDuration(item.duration).toString())
+            _musicIcon.postValue(readMediaIcon.readIcon(item.musicPath))
+            _musicName.postValue(item.title)
+            if (item.isPlay) {
+                play()
+            } else {
+                pause()
+            }
+            job?.let {
+                job = null
+            }
+            job = timerRepository.downTimer(
+                viewModelScope,
+                timerRepository.timeToDuration(item.duration),
+                1000L,
+                {
+                    _musicCurrentTime.postValue(musicPlayerUtil.player().currentPosition.toString())
+                }) {
+                job?.cancel()
+                job = null
+            }
+            _playMusic.postValue(item)
+            mutableLatestMusic.save(item.toLatestMusicModel(0))
         }
-        job?.let {
-            job = null
-        }
-        job = timerRepository.downTimer(
-            viewModelScope,
-            timerRepository.timeToDuration(item.duration),
-            1000L,
-            {
-                _musicCurrentTime.postValue(musicPlayerUtil.player().currentPosition.toString())
-            }) {
-            job?.cancel()
-            job = null
-        }
+
     }
 
     override fun previous(item: MusicItem) {
@@ -150,11 +182,11 @@ class MusicViewModel @Inject constructor(
     }
 
     override fun play() {
-        _playMusicIcon.value = R.drawable.pause_icon
+        _playMusicIcon.postValue(R.drawable.pause_icon)
     }
 
     override fun pause() {
-        _playMusicIcon.value = R.drawable.play_icon
+        _playMusicIcon.postValue(R.drawable.play_icon)
     }
 
     override fun next(item: MusicItem) {

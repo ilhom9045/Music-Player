@@ -3,6 +3,7 @@ package tj.ilhom.musicappplayer.modules.main.view.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -38,6 +39,10 @@ class MusicListBottomSheet : BaseBottomSheetDialogFragment(
         viewModel.musics.observe(viewLifecycleOwner) {
             recyclerViewAdapter.addData(it)
         }
+
+        viewModel.playMusic.observe(viewLifecycleOwner) {
+            requireContext().playMusic(it)
+        }
     }
 
     private fun initListener() {
@@ -53,14 +58,12 @@ class MusicListBottomSheet : BaseBottomSheetDialogFragment(
     }
 
     private fun initView() {
-        recyclerViewAdapter = MusicAdapter()
+        recyclerViewAdapter = MusicAdapter(lifecycleScope)
         recyclerView = findViewById(R.id.music_recyclerview)
         button = findViewById(R.id.button)
     }
 
     override fun onItemClicked(item: MusicItemDTO) {
-        val model = item.toMusicItem()
-        viewModel.showMusicData(model)
-        requireContext().playMusic(model)
+        viewModel.showMusicData(item.toMusicItem())
     }
 }
