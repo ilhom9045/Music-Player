@@ -18,7 +18,7 @@ import tj.ilhom.musicappplayer.R
 import tj.ilhom.musicappplayer.modules.main.callback.OnMusicAdapterItemClickListener
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 
-class MusicAdapter(private val coroutineScope: CoroutineScope) :
+class MusicAdapter() :
     ListAdapter<MusicItemDTO, MusicAdapter.ViewHolder>(MusicDiffUtil()) {
 
     private val items = ArrayList<MusicItemDTO>()
@@ -75,35 +75,25 @@ class MusicAdapter(private val coroutineScope: CoroutineScope) :
         holder.bind(currentList[position])
     }
 
-    private var job: Job? = null
 
     fun filter(constraint: String) {
+        val filteredList = ArrayList<MusicItemDTO>()
 
-        job?.cancel()
-
-        job = coroutineScope.launch {
-
-            delay(700)
-
-            val filteredList = ArrayList<MusicItemDTO>()
-
-            if (constraint.isEmpty()) {
-                filteredList.addAll(dataList)
-            } else {
-                val filterPattern = constraint.lowercase().trim()
-                for (i in dataList) {
-                    if (i.name.trim().lowercase().contains(filterPattern) || i.artist?.trim()
-                            ?.lowercase()?.contentEquals(
-                                filterPattern
-                            ) == true
-                    ) {
-                        filteredList.add(i)
-                    }
+        if (constraint.isEmpty()) {
+            filteredList.addAll(dataList)
+        } else {
+            val filterPattern = constraint.lowercase().trim()
+            for (i in dataList) {
+                if (i.name.trim().lowercase().contains(filterPattern) || i.artist?.trim()
+                        ?.lowercase()?.contentEquals(
+                            filterPattern
+                        ) == true
+                ) {
+                    filteredList.add(i)
                 }
             }
-
-            submitList(filteredList)
-            job = null
         }
+
+        submitList(filteredList)
     }
 }

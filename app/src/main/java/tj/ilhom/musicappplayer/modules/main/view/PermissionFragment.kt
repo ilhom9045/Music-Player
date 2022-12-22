@@ -1,10 +1,7 @@
 package tj.ilhom.musicappplayer.modules.main.view
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -23,12 +20,13 @@ import tj.ilhom.musicappplayer.modules.main.view.fragment.MusicFragment
 class PermissionFragment : BaseFragment(R.layout.empty_view) {
 
     private val permission =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (requireContext().checkReadStoragePermission()) {
                 showLongToast(getString(R.string.PERMISSION_GRANTED))
                 showMusicFragment()
             } else {
                 showLongToast(getString(R.string.PERMISSION_DAINED))
+                requireActivity().finish()
             }
         }
 
@@ -47,24 +45,18 @@ class PermissionFragment : BaseFragment(R.layout.empty_view) {
     }
 
     private fun permission() {
-        if (SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                intent.addCategory("android.intent.category.DEFAULT")
-                intent.data = Uri.parse(
-                    String.format(
-                        "package:%s",
-                        requireActivity().applicationContext.packageName
-                    )
+        try {
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+            intent.addCategory("android.intent.category.DEFAULT")
+            intent.data = Uri.parse(
+                String.format(
+                    "package:%s",
+                    requireActivity().applicationContext.packageName
                 )
-                permission.launch(intent)
-            } catch (e: Exception) {
-                val intent = Intent()
-                intent.action = Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-                permission.launch(intent)
-            }
-        } else {
-            permission.launch(Intent(READ_EXTERNAL_STORAGE))
+            )
+            permission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

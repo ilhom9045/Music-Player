@@ -78,6 +78,9 @@ class MusicViewModel @Inject constructor(
     private val _playMusic = SingleLiveEvent<MusicItem>()
     val playMusic: LiveData<MusicItem> = _playMusic
 
+    private val _search = SingleLiveEvent<String>()
+    val search: LiveData<String> = _search
+
     init {
         initMusicControllerIcon()
         readLatestMusic()
@@ -153,7 +156,7 @@ class MusicViewModel @Inject constructor(
             _musicDuration.postValue(timerRepository.timeToDuration(item.duration).toString())
             _musicIcon.postValue(readMediaIcon.readIcon(item.musicPath))
             _musicName.postValue(item.title)
-            if (item.isPlay) {
+            if (item.isPlay && !musicPlayerUtil.player().isPlaying) {
                 play()
             } else {
                 pause()
@@ -241,6 +244,20 @@ class MusicViewModel @Inject constructor(
                     _changeMusicConfig.postValue(R.drawable.ic_random)
                 }
             }
+        }
+    }
+
+
+    private var searchJob: Job? = null
+
+    fun findMusic(query: String) {
+
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            delay(700)
+            _search.postValue(query)
+            job = null
         }
     }
 }

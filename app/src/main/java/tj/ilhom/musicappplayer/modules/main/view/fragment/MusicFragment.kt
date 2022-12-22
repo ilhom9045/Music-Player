@@ -66,6 +66,10 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
 
     private fun viewmodel(savedInstanceState: Bundle?) {
 
+        viewmodel.search.observe(viewLifecycleOwner) {
+            recyclerViewAdapter.filter(it)
+        }
+
         viewmodel.musics.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
                 recyclerViewAdapter.addData(it)
@@ -138,7 +142,7 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
 
         search_edittext.addTextChangedListener {
             clearImageView.isVisible = !it.isNullOrEmpty()
-            recyclerViewAdapter.filter(it.toString())
+            viewmodel.findMusic(it.toString())
         }
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -149,7 +153,7 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
     }
 
     private fun initViews() {
-        recyclerViewAdapter = MusicAdapter(lifecycleScope)
+        recyclerViewAdapter = MusicAdapter()
         progress = findViewById(R.id.progress_bar)
         recyclerView = findViewById(R.id.music_recyclerview)
         clearImageView = findViewById(R.id.clearImageView)

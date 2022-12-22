@@ -58,7 +58,7 @@ class MusicListBottomSheet : BaseBottomSheetDialogFragment(
     }
 
     private fun initView() {
-        recyclerViewAdapter = MusicAdapter(lifecycleScope)
+        recyclerViewAdapter = MusicAdapter()
         recyclerView = findViewById(R.id.music_recyclerview)
         button = findViewById(R.id.button)
     }
