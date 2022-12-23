@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ilhom.equalizer.EqualizerFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import tj.ilhom.musicappplayer.R
@@ -46,6 +47,7 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
     private lateinit var playCardView: CardView
     private lateinit var nextCardView: CardView
     private lateinit var bottom_linearLayout: LinearLayout
+    private lateinit var equalizerCardView: CardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -122,6 +124,11 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
 
     private fun initListener() {
 
+        equalizerCardView.setOnClickListener {
+            val fragment = EqualizerFragment.newInstance(viewmodel.musicSessionId())
+            transaction(R.id.start_fragment_container, fragment, addToBackStack = true)
+        }
+
         bottom_linearLayout.setOnClickListener {
             DetailsBottomSheet().show(childFragmentManager, this::class.java.simpleName)
         }
@@ -164,6 +171,7 @@ class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemC
         nextCardView = findViewById(R.id.nextCardView)
         playImageView = findViewById(R.id.playImageView)
         bottom_linearLayout = findViewById(R.id.bottom_linearLayout)
+        equalizerCardView = findViewById(R.id.equalizerCardView)
     }
 
     override fun onItemClicked(item: MusicItemDTO) {

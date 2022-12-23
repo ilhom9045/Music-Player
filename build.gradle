@@ -9,7 +9,9 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
+        maven { url 'https://www.jitpack.io' }
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {

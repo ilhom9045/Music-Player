@@ -86,6 +86,10 @@ class MusicViewModel @Inject constructor(
         readLatestMusic()
     }
 
+    fun musicSessionId(): Int {
+        return musicPlayerUtil.player().audioSessionId
+    }
+
     private fun readLatestMusic() {
         notificationUtil.notificationModel()?.let {
             showMusicData(it)
