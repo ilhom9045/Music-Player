@@ -14,27 +14,26 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ilhom.equalizer.EqualizerFragment
+import com.ilhom.core_ui.extention.*
+import com.ilhom.equalizer.view.EqualizerFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.view.BaseFragment
 import tj.ilhom.musicappplayer.extention.*
 import tj.ilhom.musicappplayer.modules.main.adapter.MusicAdapter
 import tj.ilhom.musicappplayer.modules.main.callback.OnMusicAdapterItemClickListener
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import tj.ilhom.musicappplayer.modules.main.vm.MusicViewModel
-import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
 import tj.ilhom.musicappplayer.service.MusicNotificationBroadcast.Companion.musicNotificationListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MusicFragment : BaseFragment(R.layout.fragment_music), OnMusicAdapterItemClickListener {
+class MusicFragment : com.ilhom.core_ui.view.BaseFragment(R.layout.fragment_music), OnMusicAdapterItemClickListener {
 
     private val viewmodel: MusicViewModel by activityViewModels()
 
     @Inject
-    lateinit var resManager: ResManager
+    lateinit var resManager: com.ilhom.core.musicrepository.ResManager
 
     private lateinit var progress: ProgressBar
     private lateinit var recyclerView: RecyclerView

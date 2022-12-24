@@ -12,18 +12,16 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import tj.ilhom.musicappplayer.R
 import tj.ilhom.musicappplayer.extention.durationToTime
-import tj.ilhom.musicappplayer.core.view.BaseBottomSheetDialogFragment
-import tj.ilhom.musicappplayer.extention.findViewById
-import tj.ilhom.musicappplayer.extention.nextMusic
-import tj.ilhom.musicappplayer.extention.playMusic
-import tj.ilhom.musicappplayer.extention.previousMusic
+import com.ilhom.core_ui.extention.findViewById
+import com.ilhom.core_ui.extention.nextMusic
+import com.ilhom.core_ui.extention.playMusic
+import com.ilhom.core_ui.extention.previousMusic
 import tj.ilhom.musicappplayer.modules.main.vm.MusicViewModel
-import tj.ilhom.musicappplayer.repository.musicrepository.ResManager
 import javax.inject.Inject
 import kotlin.properties.Delegates.notNull
 
 @AndroidEntryPoint
-class DetailsBottomSheet : BaseBottomSheetDialogFragment(
+class DetailsBottomSheet : com.ilhom.core_ui.view.BaseBottomSheetDialogFragment(
     layout = R.layout.details_bottom_sheet,
     fullScreen = true
 ), SeekBar.OnSeekBarChangeListener {
@@ -31,7 +29,7 @@ class DetailsBottomSheet : BaseBottomSheetDialogFragment(
     private val viewModel: MusicViewModel by activityViewModels()
 
     @Inject
-    lateinit var resManager: ResManager
+    lateinit var resManager: com.ilhom.core.musicrepository.ResManager
 
     private var musicIcon: ImageView by notNull()
     private var seekBar: SeekBar by notNull()

@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.ilhom.equalizer.model.EqualizerModel
+import com.ilhom.equalizer.model.MusicEqualizerSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,21 +15,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.utils.SingleLiveEvent
-import tj.ilhom.musicappplayer.core.vm.BaseViewModel
 import tj.ilhom.musicappplayer.extention.await
 import tj.ilhom.musicappplayer.extention.toLatestMusicModel
 import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
-import tj.ilhom.musicappplayer.repository.Observable
-import tj.ilhom.musicappplayer.repository.TimerRepository
-import tj.ilhom.musicappplayer.repository.localStorage.MutableMusicConfig
-import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.MutableLatestMusic
-import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.ReadLatestMusic
-import tj.ilhom.musicappplayer.repository.musicrepository.ReadAllMusicRepository
-import tj.ilhom.musicappplayer.repository.musicrepository.ReadMedia
-import tj.ilhom.musicappplayer.repository.room.dao.MusicDao
 import tj.ilhom.musicappplayer.service.MusicNotificationBroadcast
-import tj.ilhom.musicappplayer.service.MusicPlayerUtil
+import com.ilhom.core.music.MusicPlayerRepository
+import com.ilhom.core.timer.TimerRepository
 import tj.ilhom.musicappplayer.service.NotificationUtil
 import tj.ilhom.musicappplayer.service.model.MusicItem
 import java.io.File
@@ -35,15 +28,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MusicViewModel @Inject constructor(
-    private val musicDao: MusicDao,
-    private val readMediaIcon: ReadMedia,
-    private val readAllMusicRepository: ReadAllMusicRepository,
+    private val musicDao: com.ilhom.core.room.dao.MusicDao,
+    private val readMediaIcon: com.ilhom.core.musicrepository.ReadMedia,
+    private val readAllMusicRepository: com.ilhom.core.musicrepository.ReadAllMusicRepository,
     private val timerRepository: TimerRepository,
-    private val musicPlayerUtil: MusicPlayerUtil,
-    private val musicConfig: MutableMusicConfig,
-    private val mutableLatestMusic: MutableLatestMusic,
-    private val notificationUtil: NotificationUtil
-) : BaseViewModel(), MusicNotificationBroadcast.MusicNotificationListener {
+    private val musicPlayerRepository: MusicPlayerRepository,
+    private val musicConfig: com.ilhom.core.localStorage.MutableMusicConfig,
+    private val mutableLatestMusic: com.ilhom.core.localStorage.latestMusic.MutableLatestMusic,
+    private val notificationUtil: NotificationUtil,
+    private val readEqualizerSettings: com.ilhom.core.localStorage.ReadEqualizerSettings
+) : com.ilhom.core_ui.vm.BaseViewModel(), MusicNotificationBroadcast.MusicNotificationListener {
 
     private val _changeMusicConfig = MutableLiveData<Int>()
     val changeMusicConfig: LiveData<Int> = _changeMusicConfig
@@ -69,25 +63,46 @@ class MusicViewModel @Inject constructor(
     private val _playMusicIcon = MutableLiveData<Int>()
     val playMusicIcon: LiveData<Int> = _playMusicIcon
 
-    private val _latestMusic = SingleLiveEvent<MusicItem>()
+    private val _latestMusic = com.ilhom.core_ui.utils.SingleLiveEvent<MusicItem>()
     val latestMusic: LiveData<MusicItem> = _latestMusic
 
     private val _exit = MutableSharedFlow<Boolean>()
     val exit = _exit.asSharedFlow()
 
-    private val _playMusic = SingleLiveEvent<MusicItem>()
+    private val _playMusic = com.ilhom.core_ui.utils.SingleLiveEvent<MusicItem>()
     val playMusic: LiveData<MusicItem> = _playMusic
 
-    private val _search = SingleLiveEvent<String>()
+    private val _search = com.ilhom.core_ui.utils.SingleLiveEvent<String>()
     val search: LiveData<String> = _search
 
     init {
         initMusicControllerIcon()
         readLatestMusic()
+        restoreMusicSettings()
+    }
+
+    private fun restoreMusicSettings() {
+        viewModelScope.launch {
+            readEqualizerSettings.read().first()?.let {
+                val model = EqualizerModel()
+                model.bassStrength = it.bassStrength
+                model.presetPos = it.presetPos
+                model.reverbPreset = it.reverbPreset
+                model.seekbarpos = it.seekbarpos
+
+                MusicEqualizerSettings.isEqualizerEnabled = true
+                MusicEqualizerSettings.isEqualizerReloaded = true
+                MusicEqualizerSettings.bassStrength = it.bassStrength
+                MusicEqualizerSettings.presetPos = it.presetPos
+                MusicEqualizerSettings.reverbPreset = it.reverbPreset
+                MusicEqualizerSettings.seekbarpos = it.seekbarpos
+                MusicEqualizerSettings.equalizerModel = model
+            }
+        }
     }
 
     fun musicSessionId(): Int {
-        return musicPlayerUtil.player().audioSessionId
+        return musicPlayerRepository.player().audioSessionId
     }
 
     private fun readLatestMusic() {
@@ -160,7 +175,7 @@ class MusicViewModel @Inject constructor(
             _musicDuration.postValue(timerRepository.timeToDuration(item.duration).toString())
             _musicIcon.postValue(readMediaIcon.readIcon(item.musicPath))
             _musicName.postValue(item.title)
-            if (item.isPlay && !musicPlayerUtil.player().isPlaying) {
+            if (item.isPlay && !musicPlayerRepository.player().isPlaying) {
                 play()
             } else {
                 pause()
@@ -173,7 +188,7 @@ class MusicViewModel @Inject constructor(
                 timerRepository.timeToDuration(item.duration),
                 1000L,
                 {
-                    _musicCurrentTime.postValue(musicPlayerUtil.player().currentPosition.toString())
+                    _musicCurrentTime.postValue(musicPlayerRepository.player().currentPosition.toString())
                 }) {
                 job?.cancel()
                 job = null
@@ -207,24 +222,24 @@ class MusicViewModel @Inject constructor(
     }
 
     fun changeMusicPosition(progress: Int) {
-        musicPlayerUtil.onSeekTo(progress)
+        musicPlayerRepository.onSeekTo(progress)
     }
 
     fun changeMusicControl() {
         viewModelScope.launch {
             val localMusicConfig =
-                musicConfig.read(MutableMusicConfig.MusicConfig.Replay()).first()
+                musicConfig.read(com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Replay()).first()
             val changeToConfig = when (localMusicConfig) {
-                is MutableMusicConfig.MusicConfig.PlayOnes -> {
-                    MutableMusicConfig.MusicConfig.Replay()
+                is com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.PlayOnes -> {
+                    com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Replay()
                 }
 
-                is MutableMusicConfig.MusicConfig.Replay -> {
-                    MutableMusicConfig.MusicConfig.Random()
+                is com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Replay -> {
+                    com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Random()
                 }
 
-                is MutableMusicConfig.MusicConfig.Random -> {
-                    MutableMusicConfig.MusicConfig.PlayOnes()
+                is com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Random -> {
+                    com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.PlayOnes()
                 }
             }
             musicConfig.save(changeToConfig)
@@ -234,17 +249,17 @@ class MusicViewModel @Inject constructor(
 
     private fun initMusicControllerIcon() {
         viewModelScope.launch(Dispatchers.IO) {
-            when (musicConfig.read(MutableMusicConfig.MusicConfig.Replay()).first()) {
+            when (musicConfig.read(com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Replay()).first()) {
 
-                is MutableMusicConfig.MusicConfig.PlayOnes -> {
+                is com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.PlayOnes -> {
                     _changeMusicConfig.postValue(R.drawable.ic_baseline_repeat_one_24)
                 }
 
-                is MutableMusicConfig.MusicConfig.Replay -> {
+                is com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Replay -> {
                     _changeMusicConfig.postValue(R.drawable.ic_baseline_repeat_24)
                 }
 
-                is MutableMusicConfig.MusicConfig.Random -> {
+                is com.ilhom.core.localStorage.MutableMusicConfig.MusicConfig.Random -> {
                     _changeMusicConfig.postValue(R.drawable.ic_random)
                 }
             }

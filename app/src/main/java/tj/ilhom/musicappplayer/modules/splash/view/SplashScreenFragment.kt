@@ -6,13 +6,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.view.BaseFragment
-import tj.ilhom.musicappplayer.extention.findViewById
-import tj.ilhom.musicappplayer.extention.transaction
-import tj.ilhom.musicappplayer.extention.transparentToolbar
+import com.ilhom.core_ui.extention.findViewById
+import com.ilhom.core_ui.extention.transaction
+import com.ilhom.core_ui.extention.transparentToolbar
 import tj.ilhom.musicappplayer.modules.main.view.PermissionFragment
 
-class SplashScreenFragment : BaseFragment(R.layout.activity_splash_screen) {
+class SplashScreenFragment : com.ilhom.core_ui.view.BaseFragment(R.layout.activity_splash_screen) {
 
     private lateinit var fullscreenSpash: LottieAnimationView
 

@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import androidx.core.graphics.drawable.toDrawable
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.repository.TimerRepository
+import com.ilhom.core.timer.TimerRepository
 
 fun String.imageArtist(): ByteArray? {
     val retriever = MediaMetadataRetriever()

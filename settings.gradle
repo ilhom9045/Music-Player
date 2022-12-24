@@ -18,3 +18,5 @@ dependencyResolutionManagement {
 rootProject.name = "MusicAppPlayer"
 include ':app'
 include ':equalizer'
+include ':core'
+include ':core_ui'

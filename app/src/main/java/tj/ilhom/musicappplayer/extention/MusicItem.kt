@@ -1,10 +1,10 @@
 package tj.ilhom.musicappplayer.extention
 
-import tj.ilhom.musicappplayer.repository.localStorage.latestMusic.LatestMusicModel
+import com.ilhom.core.localStorage.latestMusic.LatestMusicModel
 import tj.ilhom.musicappplayer.service.model.MusicItem
 
-fun MusicItem.toLatestMusicModel(durationPosition: Int): LatestMusicModel {
-    return LatestMusicModel(
+fun MusicItem.toLatestMusicModel(durationPosition: Int): com.ilhom.core.localStorage.latestMusic.LatestMusicModel {
+    return com.ilhom.core.localStorage.latestMusic.LatestMusicModel(
         isPlay = this.isPlay,
         id = this.id,
         musicPath = this.musicPath,

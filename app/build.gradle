@@ -42,6 +42,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation project(path: ':equalizer')
+    implementation project(path: ':core')
+    implementation project(path: ':core_ui')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
@@ -61,11 +63,6 @@ dependencies {
     //Coroutines
     def coroutines_version = '1.5.2-native-mt'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
-
-    //Room
-    def room = '2.3.0-alpha03'
-    implementation "androidx.room:room-runtime:$room"
-    kapt "androidx.room:room-compiler:$room"
 
     //Hilt
     implementation "com.google.dagger:hilt-android:$dagger_hilt_version"

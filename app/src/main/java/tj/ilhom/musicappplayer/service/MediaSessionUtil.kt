@@ -5,12 +5,13 @@ import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import com.ilhom.core.music.MusicPlayerRepository
 import tj.ilhom.musicappplayer.service.model.MusicItem
 
 class MediaSessionUtil(
     private val context: Context,
-    private val player: MusicPlayerUtil
-) : MusicPlayerUtil.MusicPlayerListener {
+    private val player: MusicPlayerRepository
+) : MusicPlayerRepository.MusicPlayerListener {
 
     private val mediaSession: MediaSessionCompat by lazy {
         MediaSessionCompat(context, "My Music")

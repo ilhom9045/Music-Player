@@ -1,7 +1,7 @@
 package tj.ilhom.musicappplayer.modules.main.vm
 
-import tj.ilhom.musicappplayer.core.vm.BaseViewModel
+import com.ilhom.core_ui.vm.BaseViewModel
 
-class DetailsBottomSheetViewModel:BaseViewModel() {
+class DetailsBottomSheetViewModel: com.ilhom.core_ui.vm.BaseViewModel() {
 
 }

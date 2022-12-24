@@ -11,15 +11,16 @@ import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.ilhom.core.music.MusicPlayerRepository
 import tj.ilhom.musicappplayer.R
 import tj.ilhom.musicappplayer.extention.musicDrawable
-import tj.ilhom.musicappplayer.extention.newActionIntent
-import tj.ilhom.musicappplayer.extention.newPendingIntent
+import com.ilhom.core_ui.extention.newActionIntent
+import com.ilhom.core_ui.extention.newPendingIntent
 import tj.ilhom.musicappplayer.modules.StartActivity
 import tj.ilhom.musicappplayer.service.model.MusicItem
 import java.util.concurrent.atomic.AtomicInteger
 
-class NotificationUtil(private val context: Context, private val musicPlayerUtil: MusicPlayerUtil) {
+class NotificationUtil(private val context: Context, private val musicPlayerRepository: MusicPlayerRepository) {
 
     companion object {
         const val PREVIOUS = "PREVIOUS"
@@ -44,7 +45,7 @@ class NotificationUtil(private val context: Context, private val musicPlayerUtil
     ): Notification {
         musicItem = model
 
-        val isPlay = musicPlayerUtil.player().isPlaying || model.isPlay
+        val isPlay = musicPlayerRepository.player().isPlaying || model.isPlay
 
         val drawable = model.musicPath.musicDrawable(context)
             ?: ContextCompat.getDrawable(context, R.drawable.music_icon)

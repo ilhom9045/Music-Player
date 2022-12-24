@@ -5,10 +5,12 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyEvent.*
-import tj.ilhom.musicappplayer.extention.*
+import com.ilhom.core_ui.extention.nextMusic
+import com.ilhom.core_ui.extention.playMusic
+import com.ilhom.core_ui.extention.previousMusic
+import com.ilhom.core_ui.extention.stopMusic
 
 class MediaSessionCallBack(
     private val context: Context,

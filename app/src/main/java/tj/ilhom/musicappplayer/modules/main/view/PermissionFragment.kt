@@ -9,15 +9,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.view.BaseFragment
-import tj.ilhom.musicappplayer.extention.checkReadStoragePermission
-import tj.ilhom.musicappplayer.extention.showLongToast
-import tj.ilhom.musicappplayer.extention.showToolbar
-import tj.ilhom.musicappplayer.extention.transaction
+import com.ilhom.core_ui.extention.checkReadStoragePermission
+import com.ilhom.core_ui.extention.showLongToast
+import com.ilhom.core_ui.extention.showToolbar
+import com.ilhom.core_ui.extention.transaction
 import tj.ilhom.musicappplayer.modules.main.view.fragment.MusicFragment
 
 @AndroidEntryPoint
-class PermissionFragment : BaseFragment(R.layout.empty_view) {
+class PermissionFragment : com.ilhom.core_ui.view.BaseFragment(R.layout.empty_view) {
 
     private val permission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {

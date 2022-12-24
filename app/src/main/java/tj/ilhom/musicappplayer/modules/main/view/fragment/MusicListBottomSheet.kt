@@ -3,14 +3,12 @@ package tj.ilhom.musicappplayer.modules.main.view.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import tj.ilhom.musicappplayer.R
-import tj.ilhom.musicappplayer.core.view.BaseBottomSheetDialogFragment
-import tj.ilhom.musicappplayer.extention.findViewById
-import tj.ilhom.musicappplayer.extention.playMusic
+import com.ilhom.core_ui.extention.findViewById
+import com.ilhom.core_ui.extention.playMusic
 import tj.ilhom.musicappplayer.extention.toMusicItem
 import tj.ilhom.musicappplayer.modules.main.adapter.MusicAdapter
 import tj.ilhom.musicappplayer.modules.main.callback.OnMusicAdapterItemClickListener
@@ -18,7 +16,7 @@ import tj.ilhom.musicappplayer.modules.main.model.MusicItemDTO
 import tj.ilhom.musicappplayer.modules.main.vm.MusicViewModel
 import kotlin.properties.Delegates.notNull
 
-class MusicListBottomSheet : BaseBottomSheetDialogFragment(
+class MusicListBottomSheet : com.ilhom.core_ui.view.BaseBottomSheetDialogFragment(
     R.layout.music_list_bottom_sheet,
     false
 ), OnMusicAdapterItemClickListener {

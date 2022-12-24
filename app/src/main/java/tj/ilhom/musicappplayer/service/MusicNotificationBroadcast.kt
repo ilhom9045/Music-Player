@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
-import tj.ilhom.musicappplayer.repository.MusicManager
+import com.ilhom.core.music.MusicManager
 import tj.ilhom.musicappplayer.service.NotificationUtil.Companion.EXIT
 import tj.ilhom.musicappplayer.service.NotificationUtil.Companion.NEXT
 import tj.ilhom.musicappplayer.service.NotificationUtil.Companion.PLAY
